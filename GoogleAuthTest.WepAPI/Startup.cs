@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -45,7 +46,7 @@ namespace GoogleAuthTest.WepAPI
 			                   {
 				                   googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
 				                   googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
-													 googleOptions.AuthorizationEndpoint = "/google-login";
+													 //googleOptions.AuthorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
 
 													 googleOptions.Events = new OAuthEvents()
 													                        {
@@ -55,7 +56,7 @@ namespace GoogleAuthTest.WepAPI
 																                                           ctx.Principal.FindFirstValue(ClaimTypes
 																	                                                                        .NameIdentifier);
 
-															                                           ctx.Response.Redirect("/Index");
+															                                           ctx.Response.Redirect("~/Index");
 															                                           return Task.CompletedTask;
 														                                           }
 													                        };
