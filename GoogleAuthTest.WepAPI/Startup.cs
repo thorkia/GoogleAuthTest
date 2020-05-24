@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using System.Security.Claims;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -37,16 +39,26 @@ namespace GoogleAuthTest.WepAPI
 			services.AddAuthentication( option =>
 			                            {
 				                            option.DefaultScheme = "APIScheme";
-				                            option.DefaultAuthenticateScheme = "AuthScheme";
 			                            })
 			        .AddCookie("APIScheme")
-			        .AddCookie("AuthScheme")
 			        .AddGoogle(googleOptions =>
 			                   {
 				                   googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
 				                   googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
-													 googleOptions.AuthorizationEndpoint = "/authentication/external/google-login";
-													 googleOptions.CallbackPath = "/authentication/external/google-callback";
+													 googleOptions.AuthorizationEndpoint = "/google-login";
+
+													 googleOptions.Events = new OAuthEvents()
+													                        {
+														                        OnTicketReceived = ctx =>
+														                                           {
+															                                           var username =
+																                                           ctx.Principal.FindFirstValue(ClaimTypes
+																	                                                                        .NameIdentifier);
+
+															                                           ctx.Response.Redirect("/Index");
+															                                           return Task.CompletedTask;
+														                                           }
+													                        };
 			                   });
 
 			services.AddMvc()
