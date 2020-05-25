@@ -1,25 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
 using System.Security.Claims;
-using System.Security.Policy;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 
 namespace GoogleAuthTest.WepAPI
 {
@@ -44,9 +30,11 @@ namespace GoogleAuthTest.WepAPI
 			        .AddCookie("APIScheme")
 			        .AddGoogle(googleOptions =>
 			                   {
+				                   googleOptions.SignInScheme = "APIScheme";
 				                   googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
 				                   googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
-													 //googleOptions.AuthorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
+
+				                   //googleOptions.AuthorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
 
 													 googleOptions.Events = new OAuthEvents()
 													                        {
@@ -55,8 +43,10 @@ namespace GoogleAuthTest.WepAPI
 															                                           var username =
 																                                           ctx.Principal.FindFirstValue(ClaimTypes
 																	                                                                        .NameIdentifier);
+																																				 //TODO: Add user check/creation here 
 
-															                                           ctx.Response.Redirect("~/Index");
+															                                           ctx.Response.Redirect("/Index");
+																																				 ctx.HandleResponse();
 															                                           return Task.CompletedTask;
 														                                           }
 													                        };

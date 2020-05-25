@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Events;
 
 namespace GoogleAuthTest.WepAPI
 {
@@ -14,9 +15,14 @@ namespace GoogleAuthTest.WepAPI
 	{
 		public static void Main(string[] args)
 		{
+			//TODO:  Change to logging to desired levels
 			Log.Logger = new LoggerConfiguration()
-			             .MinimumLevel.Information()
-			             .WriteTo.Console()
+			             .MinimumLevel.Debug()
+			             .WriteTo.Logger(l =>
+			                             {
+				                             l.WriteTo.File("debugLogs.txt");
+			                             })
+			             .WriteTo.Console(LogEventLevel.Information)
 			             .CreateLogger();
 
 			CreateHostBuilder(args).Build().Run();
